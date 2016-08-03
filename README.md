@@ -64,3 +64,13 @@ function configureOauth(oauthService, oauthTokenService) {
 }
 ```
 The above function for OAuth configuration provides sample configuration of Google API authorization endpoint.
+
+## Browser support
+
+This plugin should work with all modern browsers, although it is still in early phase and can contain few bugs. To support IE10/11 you need to add the script tag to head section of the main page(index.html) as shown below. It is related to the IE known-issue with # in url and redirects. The following fix will not affect other correctly working browsers.
+```js
+<!-- Fix for IE bug with page reload when changing hash in url after redirect -->
+<script type="text/javascript">
+	window.location.hash = window.location.hash;
+</script>
+```
