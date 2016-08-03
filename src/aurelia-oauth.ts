@@ -6,7 +6,6 @@ import { OAuthService } from './oauth-service';
 import { OAuthTokenService } from './oauth-token-service';
 import OAuthInterceptor from './oauth-interceptor';
 import { OAuthAuthorizeStep } from './oauth-authorize-step';
-import './oauth-polyfills';
 
 export function configure(framework: FrameworkConfiguration, config: (oauthService, oauthTokenService) => void) {
 

@@ -4,6 +4,7 @@ import { autoinject } from 'aurelia-dependency-injection';
 import { OAuthTokenService } from './oauth-token-service';
 import UrlHashService from './url-hash-service';
 import LocalStorageService from './local-storage-service';
+import { objectAssign } from './oauth-polyfills';
 
 const OAUTH_STARTPAGE_STORAGE_KEY: string = 'oauth.startPage';
 
@@ -47,7 +48,7 @@ export class OAuthService implements IOAuthService {
         }
 
         // Extend default configuration.
-        this.config = Object.assign(this.defaults, config);
+        this.config = objectAssign(this.defaults, config);
 
         // Redirect is set to current location by default
         var existingHash = window.location.hash;

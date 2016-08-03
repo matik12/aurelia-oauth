@@ -1,6 +1,7 @@
 import { autoinject } from 'aurelia-dependency-injection';
 
 import JwtTokenService from './jwt-token-service';
+import { objectAssign } from './oauth-polyfills';
 
 @autoinject()
 export class OAuthTokenService implements IOAuthTokenService {
@@ -23,10 +24,10 @@ export class OAuthTokenService implements IOAuthTokenService {
 
         // Extend default configration with supplied config data
         if (config.urlTokenParameters) {
-            config.urlTokenParameters = Object.assign(this.config.urlTokenParameters, config.urlTokenParameters);
+            config.urlTokenParameters = objectAssign(this.config.urlTokenParameters, config.urlTokenParameters);
         }
         
-        this.config = Object.assign(this.config, config);
+        this.config = objectAssign(this.config, config);
 
         return config;
     };
