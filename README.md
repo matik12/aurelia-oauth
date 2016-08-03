@@ -1,55 +1,27 @@
-# aurelia-oauth
 
-aurelia-oauth is a plugin for Aurelia to provide support of users authorization using protocol oauth2.0. 
-The configuration is very easy and requires almost no time. Plugin implements only oauth implicit grant flow.
-aurelia-oauth was designed mainly to provide the same functionality as ADALjs library and can integrate with apis such as Azure Active Directory or Google.
+#### NPM package [aurelia-oauth](https://www.npmjs.com/package/aurelia-oauth)
 
-## Building The Code
+## What is aurelia-oauth plugin?
+aurelia-oauth is a plugin for [Aurelia](http://aurelia.io/) to provide support of user authorization using protocol OAuth 2.0. 
 
-To build the code, follow these steps.
+aurelia-oauth has very similar functionality as [ADALjs library] (https://github.com/AzureAD/azure-activedirectory-library-for-js) and is able integrate with OAuth2 APIs such as Azure Active Directory, Google etc.
 
-1. Ensure that [NodeJS](http://nodejs.org/) is installed. This provides the platform on which the build tooling runs.
-2. From the project folder, execute the following command:
+aurelia-oauth plugin automatically uses 'Bearer' JWT (JSON WEB TOKEN) tokens to send requests to secured APIs by adding Authorization header. The underlying token is **never stored** on the client due to sensitive data security. Use this page [JWT](https://jwt.io/) to decode tokens and investiage claims.   
 
-  ```shell
-  npm install
-  ```
-3. Ensure that [Gulp](http://gulpjs.com/) is installed. If you need to install it, use the following command:
+![Authentication header](./pictures/jwt_token.png)
 
-  ```shell
-  npm install -g gulp
-  ```
-4. To build the code, you can now run:
+This plugin implements only OAuth implicit grant flow, which is the recommended approach for both client side SPA applications and mobile apps. Animation below shows plugin and its flow in action.
 
-  ```shell
-  gulp build
-  ```
-5. You will find the compiled code in the `dist` folder, available in three module formats: AMD, CommonJS and ES6.
+![OAuth Implicit Grant Flow](./pictures/oauth_flow.gif)
 
-6. See `gulpfile.js` for other tasks related to generating the docs and linting.
+# Installation prerequisites
+Obviously, you need to have installed [NodeJs](https://nodejs.org/) and [Gulp](http://gulpjs.com/). aurelia-oauth was based on [Aurelia plugin](https://github.com/aurelia/skeleton-plugin) requires only standard Aurelia libraries. It's highly recommended to use JSPM for package managment.
 
-## Running The Tests
-
-To run the unit tests, first ensure that you have followed the steps above in order to install all dependencies and successfully build the library. Once you have done that, proceed with these additional steps:
-
-1. Ensure that the [Karma](http://karma-runner.github.io/) CLI is installed. If you need to install it, use the following command:
-
-  ```shell
-  npm install -g karma-cli
-  ```
-2. Ensure that [jspm](http://jspm.io/) is installed. If you need to install it, use the following commnand:
-
-  ```shell
-  npm install -g jspm
-  ```
-3. Install the client-side dependencies with jspm:
-
-  ```shell
-  jspm install
-  ```
-
-4. You can now run the tests with this command:
-
-  ```shell
-  karma start
-  ```
+# Installation
+```
+jspm install aurelia-oauth
+```
+Using Npm:
+```
+Npm install aurelia-oauth --save
+```
