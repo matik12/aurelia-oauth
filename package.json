@@ -27,9 +27,9 @@
   "jspm": {
     "registry": "npm",
     "main": "aurelia-auth",
-    "format": "system",
+    "format": "amd",
     "directories": {
-      "dist": "dist/system"
+      "dist": "dist/amd"
     },
     "dependencies": {
       "aurelia-dependency-injection": "^1.0.0",
