@@ -10,7 +10,7 @@ aurelia-oauth plugin automatically uses 'Bearer' JWT (JSON WEB TOKEN) tokens to 
 
 ![Authentication header](./pictures/jwt_token.png)
 
-This plugin implements only **OAuth implicit grant flow**, which is the recommended approach for both client side SPA applications and mobile apps. In this case, application does not need to supply login page and can leverage external login page with Single-Sign-On. Plugin relies on simple page redirects(**no popups!**) and therefore can be seamlessly used on mobile devices. Animation below shows plugin and its flow in action.
+This plugin implements only **OAuth implicit grant flow**, which is the recommended approach for both client side SPA applications and mobile apps. In this case, application does not need to supply login page and can leverage external login page with Single Sign-On. Plugin relies on simple page redirects(**no popups!**) and therefore can be seamlessly used on mobile devices. Animation below shows plugin and its flow in action.
 
 ![OAuth Implicit Grant Flow](./pictures/oauth_flow.gif)
 
@@ -34,7 +34,7 @@ typings install github:matik12/aurelia-oauth --save --global
 
 ## Update the Aurelia configuration file
 
-In your Aurelia configuration file(most commonly main.ts/js file), add the plugin and provide OAuth endpoint configuration :
+In your Aurelia configuration file(most commonly main file) add the plugin and provide OAuth endpoint configuration :
 ```js
 import 'aurelia-oauth';
 
@@ -46,7 +46,21 @@ export function configure(aurelia: Aurelia) {
 
   aurelia.start().then(() => aurelia.setRoot());
 }
-
+```
+The configuration for Azure Active Directory is very simple, because it uses default parameter values in plugin internal set up. Just need to replace {tenantId} and {clientId} with your Azure Application real values and you are up and running.
+```js
+function configureOauth(oauthService, oauthTokenService) {
+  oauthService.configure(
+    {
+      loginUrl: 'https://login.microsoftonline.com/{tenantId}/oauth2/authorize',
+      logoutUrl: 'https://login.microsoftonline.com/{tenantId}/oauth2/authorize',
+	  clientId: '{clientId}',
+      alwaysRequireLogin: true
+    });
+}
+```
+The function below for OAuth configuration provides sample values of Google API authorization endpoint. This should all work in the local environment by using my test API endpoint if you choose to host web app using  the following address - http://localhost:9000/
+```js
 function configureOauth(oauthService, oauthTokenService) {
   oauthService.configure(
     {
@@ -67,7 +81,49 @@ function configureOauth(oauthService, oauthTokenService) {
     });
 }
 ```
-The above function for OAuth configuration provides sample configuration of Google API authorization endpoint.
+
+## Configure routing to use authentication
+
+When setting configuration for aurelia-oauth plugin you can choose if you want to give only authenticated users access to your application or only in particular routes user login is required. 
+```js
+alwaysRequireLogin: true
+```
+Default value for the above property is false, but passing true value means, that application should require user login in all its routes except the particular route provide setting overriding this behavior. Every route in the application can configure setting to require authentication or not. This step is not necessary, but can be done as follows:
+```js
+{ route: 'users', name: 'users', moduleId: 'users', nav: true, title: 'Github Users', settings: { requireLogin: true } }
+```
+The **requireLogin** setting overrides global authentication configuration and can be set to true or false value if this is needed. In the example above users route can only be available for authenticated users.
+
+## Add logout button
+
+To provide logout functionality, simply add button or anchor to the html and bind it to the logout method in the backing the view-model as shown below.
+```js
+import {OAuthService} from 'aurelia-oauth';
+
+@autoinject()
+export class Navigation {
+  constructor(private oauthService: OAuthService) { } 
+
+  logout(): void {
+    this.oauthService.logout();
+  }
+}
+```
+
+## Published events
+
+This plugin also supports simple notification in the authentication process and broadcast an event is Aurelia's event aggregator when something important occurred. For instance, you might want to know that user has been authenticated to start some logic or that obtained token has expired to show proper message to the end user.
+The supported events are as follows:
+
+* login: `oauth:loginSuccess`
+* invalid token (expired): `oauth:invalidToken`
+
+If you are using Typescript, in definitions there are declared const properties for this events to use them when subscribing to an event. 
+```js
+import {OAuthService} from 'aurelia-oauth';
+
+eventAggregator.subscribe(OAuthService.LOGIN_SUCCESS_EVENT, () => { ... });
+```
 
 ## Browser support
 
@@ -81,3 +137,37 @@ This plugin should work with all modern browsers, although it is still in early 
 	</script>
 </head>
 ```
+
+## Authentication class interface
+
+```js
+interface IOAuthService {
+    config: IOAuthConfig;
+    
+    configure: (config: IOAuthConfig) => IOAuthConfig;
+
+    isAuthenticated: () => boolean;
+    login: () => void;
+    logout: () => void;
+    loginOnStateChange: (toState) => boolean;
+    setTokenOnRedirect: () => void;
+}
+
+interface IOAuthTokenService {
+    config: IOAuthTokenConfig;
+
+    configure: (config: IOAuthTokenConfig) => IOAuthTokenConfig;
+
+    isTokenValid: () => boolean;
+    createToken: (urlTokenData: any) => IOAuthTokenData;
+    setToken: (data: IOAuthTokenData) => void;
+    getToken: () => IOAuthTokenData;
+    removeToken: () => void; 
+    getAuthorizationHeader: () => string;
+}
+```
+More on this to be done soon...
+
+## Support for aurelia-fetch-client
+
+Currently, aurelia-oauth provides automatic feature of adding authorization header to every request by using custom interceptor. To implement this, plugin uses **aurelia-http-client** which has support for cancelling requests in case when token has expired before request occurred. The following issue considering poor fetch API implementation will be investigated further in the future to adjust aurelia-oauth plugin. More on this to be done soon...
