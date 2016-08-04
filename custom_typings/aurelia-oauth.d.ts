@@ -1,3 +1,21 @@
+declare module 'aurelia-oauth' {
+  export class OAuthService implements IOAuthService {
+    static LOGIN_SUCCESS_EVENT(): string;
+    static INVALID_TOKEN_EVENT(): string;
+    config: IOAuthConfig;
+
+    constructor();
+   
+    configure: (config: IOAuthConfig) => IOAuthConfig;
+
+    isAuthenticated: () => boolean;
+    login: () => void;
+    logout: () => void;
+    loginOnStateChange: (toState) => boolean;
+    setTokenOnRedirect: () => void;
+  }
+}
+
 interface IOAuthTokenService {
     config: IOAuthTokenConfig;
 

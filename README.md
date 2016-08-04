@@ -23,7 +23,11 @@ jspm install aurelia-oauth
 ```
 Using Npm:
 ```
-Npm install aurelia-oauth --save
+npm install aurelia-oauth --save
+```
+Using typescript you can install definitions:
+```
+typings install github:matik12/aurelia-oauth --save --global
 ```
 
 # Usage guide
@@ -67,10 +71,13 @@ The above function for OAuth configuration provides sample configuration of Goog
 
 ## Browser support
 
-This plugin should work with all modern browsers, although it is still in early phase and can contain few bugs. To support IE10/11 you need to add the script tag to head section of the main page(index.html) as shown below. It is related to the IE known-issue with # in url and redirects. The following fix will not affect other correctly working browsers.
+This plugin should work with all modern browsers, although it is still in early phase and can contain few bugs. To support IE10 & IE11 you need to add the script tag to the head section of the main page(index.html) as shown below. It is related to the IE known-issue with # in URL and redirects. The following fix will not affect other correctly working browsers.
 ```js
-<!-- Fix for IE bug with page reload when changing hash in url after redirect -->
-<script type="text/javascript">
-	window.location.hash = window.location.hash;
-</script>
+<head>
+	...
+	<!-- Fix for IE bug with page reload when changing hash in url after redirect -->
+	<script type="text/javascript">
+		window.location.hash = window.location.hash;
+	</script>
+</head>
 ```

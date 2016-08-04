@@ -1,7 +1,7 @@
 {
 	"name": "aurelia-oauth",
 	"main": "dist/aurelia-oauth.d.ts",
-	"dependencies": {		
+	"devDependencies": {
 		"aurelia-binding": "github:aurelia/binding",
 		"aurelia-bootstrapper": "github:aurelia/bootstrapper",
 		"aurelia-dependency-injection": "github:aurelia/dependency-injection",
