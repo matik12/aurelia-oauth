@@ -1,6 +1,6 @@
 {
   "name": "aurelia-oauth",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Plugin for authentication using OAuth2 and JWT security tokens such as Azure Active Directory or GoogleApi",
   "keywords": [
     "aurelia",
