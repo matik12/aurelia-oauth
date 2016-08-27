@@ -1,5 +1,9 @@
+[**Contributors needed**: I'm looking for people that are willing to help me maintain and improve this plugin.](https://github.com/matik12/aurelia-oauth/issues/1)
+
+---
 
 #### NPM package [aurelia-oauth](https://www.npmjs.com/package/aurelia-oauth)
+#### Setup using Google API -> [Live demo](https://matik12.github.io/aurelia-basic-app-skeleton/)
 
 ## What is aurelia-oauth plugin?
 aurelia-oauth is a plugin for [Aurelia](http://aurelia.io/) to provide support of user authorization using OAuth 2.0 Authorization Framework. 
@@ -36,8 +40,6 @@ typings install github:matik12/aurelia-oauth --save --global
 
 In your Aurelia configuration file(most commonly main file) add the plugin and provide OAuth endpoint configuration :
 ```js
-import 'aurelia-oauth';
-
 export function configure(aurelia: Aurelia) {
   aurelia.use
     .standardConfiguration()
