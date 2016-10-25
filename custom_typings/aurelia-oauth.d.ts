@@ -1,19 +1,34 @@
 declare module 'aurelia-oauth' {
-  export class OAuthService implements IOAuthService {
-    static LOGIN_SUCCESS_EVENT(): string;
-    static INVALID_TOKEN_EVENT(): string;
-    config: IOAuthConfig;
+    export class OAuthService implements IOAuthService {
+        static LOGIN_SUCCESS_EVENT(): string;
+        static INVALID_TOKEN_EVENT(): string;
+        config: IOAuthConfig;
 
-    constructor();
-   
-    configure: (config: IOAuthConfig) => IOAuthConfig;
+        constructor();
 
-    isAuthenticated: () => boolean;
-    login: () => void;
-    logout: () => void;
-    loginOnStateChange: (toState) => boolean;
-    setTokenOnRedirect: () => void;
-  }
+        configure: (config: IOAuthConfig) => IOAuthConfig;
+
+        isAuthenticated: () => boolean;
+        login: () => void;
+        logout: () => void;
+        loginOnStateChange: (toState) => boolean;
+        setTokenOnRedirect: () => void;
+    }
+
+    export class OAuthTokenService implements IOAuthTokenService {
+        config: IOAuthTokenConfig;
+
+        constructor();
+
+        configure: (config: IOAuthTokenConfig) => IOAuthTokenConfig;
+
+        isTokenValid: () => boolean;
+        createToken: (urlTokenData: any) => IOAuthTokenData;
+        setToken: (data: IOAuthTokenData) => void;
+        getToken: () => IOAuthTokenData;
+        removeToken: () => void;
+        getAuthorizationHeader: () => string;
+    }
 }
 
 interface IOAuthTokenService {
@@ -25,7 +40,7 @@ interface IOAuthTokenService {
     createToken: (urlTokenData: any) => IOAuthTokenData;
     setToken: (data: IOAuthTokenData) => void;
     getToken: () => IOAuthTokenData;
-    removeToken: () => void; 
+    removeToken: () => void;
     getAuthorizationHeader: () => string;
 }
 
@@ -57,7 +72,7 @@ interface IOAuthConfig {
 
 interface IOAuthService {
     config: IOAuthConfig;
-    
+
     configure: (config: IOAuthConfig) => IOAuthConfig;
 
     isAuthenticated: () => boolean;

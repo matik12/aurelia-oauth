@@ -28,5 +28,6 @@ export function configure(framework: FrameworkConfiguration, config: (oauthServi
 }
 
 export {
-  OAuthService
+  OAuthService,
+  OAuthTokenService
 }
