@@ -88,7 +88,8 @@ export class OAuthService implements IOAuthService {
 
     public logout = (): void => {
         var redirectUrl = `${this.config.logoutUrl}?` +
-            `${this.config.logoutRedirectParameterName}=${encodeURIComponent(this.config.redirectUri)}`;
+            `${this.config.logoutRedirectParameterName}=${encodeURIComponent(this.config.redirectUri)}&` +
+            `id_token_hint=${encodeURIComponent(this.oAuthTokenService.getIdToken())}`;
 
         window.location.href = redirectUrl;
         this.oAuthTokenService.removeToken();
