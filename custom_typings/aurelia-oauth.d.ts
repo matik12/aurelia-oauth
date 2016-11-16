@@ -66,6 +66,7 @@ interface IOAuthConfig {
     clientId: string;
     logoutRedirectParameterName?: string;
     scope?: string;
+    state?: string;
     redirectUri?: string;
     alwaysRequireLogin?: boolean;
 }
