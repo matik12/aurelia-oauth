@@ -29,6 +29,7 @@ export class OAuthService implements IOAuthService {
             clientId: null,
             logoutRedirectParameterName: 'post_logout_redirect_uri',
             scope: null,
+            state: null,
             alwaysRequireLogin: false
         };
     }
@@ -81,6 +82,10 @@ export class OAuthService implements IOAuthService {
 
         if (this.config.scope) {
             redirectUrl += `&scope=${encodeURIComponent(this.config.scope)}`;
+        }
+        
+        if (this.config.state) {
+            redirectUrl += `&state=${encodeURIComponent(this.config.state)}`;
         }
         
         window.location.href = redirectUrl;
