@@ -51,7 +51,7 @@ export function configure(aurelia: Aurelia) {
 ```
 The configuration for Azure Active Directory is very simple, because it uses default parameter values in plugin internal set up. Just need to replace {tenantId} and {clientId} with your Azure Application real values and you are up and running.
 ```js
-function configureOauth(oauthService, oauthTokenService) {
+function configureOauth(oauthService: IOAuthConfig) {
   oauthService.configure(
     {
       loginUrl: 'https://login.microsoftonline.com/{tenantId}/oauth2/authorize',
@@ -63,7 +63,7 @@ function configureOauth(oauthService, oauthTokenService) {
 ```
 The function below for OAuth configuration provides sample values of Google API authorization endpoint. This should all work in the local environment by using my test API endpoint if you choose to host web app using  the following address - http://localhost:9000/
 ```js
-function configureOauth(oauthService, oauthTokenService) {
+function configureOauth(oauthService: IOAuthConfig, oauthTokenService: IOAuthTokenConfig) {
   oauthService.configure(
     {
       loginUrl: 'https://accounts.google.com/o/oauth2/auth',
@@ -169,6 +169,30 @@ interface IOAuthTokenService {
 }
 ```
 More on this to be done soon...
+
+## Plugin configuration parameters (config interfaces)
+
+```js
+interface IOAuthConfig {
+    loginUrl: string;
+    logoutUrl: string;
+    clientId: string;
+    logoutRedirectParameterName?: string;
+    scope?: string;
+    state?: string;
+    redirectUri?: string;
+    alwaysRequireLogin?: boolean;
+}
+
+interface IOAuthTokenConfig {
+    name: string;
+    urlTokenParameters?: {
+        idToken: string;
+        tokenType?: string;
+    };
+    expireOffsetSeconds?: number;
+}
+```
 
 ## Support for aurelia-fetch-client
 
