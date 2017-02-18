@@ -1,10 +1,11 @@
 import { EventAggregator } from 'aurelia-event-aggregator';
-import { HttpRequestMessage } from 'aurelia-http-client';
 import { OAuthTokenService } from './oauth-token-service';
 export default class OAuthInterceptor {
     private oauthTokenService;
     private eventAggregator;
     constructor(oauthTokenService: OAuthTokenService, eventAggregator: EventAggregator);
-    request: (config: HttpRequestMessage) => any;
-    responseError: (response: any) => any;
+    request: (config: any) => any;
+    response: (response: any, request?: any) => any;
+    responseError: (response: any, request?: any) => any;
+    private handleRequestError(response, requestMessage?);
 }

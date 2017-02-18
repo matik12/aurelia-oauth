@@ -1,6 +1,6 @@
 {
   "name": "aurelia-oauth",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "description": "Plugin for authentication using OAuth2 and JWT security tokens such as Azure Active Directory or GoogleApi",
   "keywords": [
     "aurelia",
@@ -32,7 +32,6 @@
     "dependencies": {
       "aurelia-dependency-injection": "^1.0.0",
       "aurelia-event-aggregator": "^1.0.0",
-      "aurelia-http-client": "^1.0.0",
       "aurelia-router": "^1.0.0"
     },
     "devDependencies": {

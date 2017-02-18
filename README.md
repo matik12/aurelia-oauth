@@ -42,20 +42,27 @@ typings install github:matik12/aurelia-oauth --save
 
 In your Aurelia configuration file(most commonly main file) add the plugin and provide OAuth endpoint configuration :
 ```js
+// Uncomment import for client plugin you want to use i.e. fetch or http
+// import { HttpClient } from 'aurelia-http-client';
+// import { HttpClient } from 'aurelia-fetch-client';
+
 export function configure(aurelia: Aurelia) {
+  const httpClient = <HttpClient>aurelia.container.get(HttpClient);
+
   aurelia.use
     .standardConfiguration()
     .developmentLogging()
-    .plugin('aurelia-oauth', configureOauth);
+    .plugin('aurelia-oauth', (oauthService, oauthTokenService, configureClient) =>
+      configureOauth(oauthService, oauthTokenService, configureClient, httpClient));
 
   aurelia.start().then(() => aurelia.setRoot());
 }
 ```
 The configuration for Azure Active Directory is very simple, because it uses default parameter values in plugin internal set up. Just need to replace {tenantId} and {clientId} with your Azure Application real values and you are up and running.
 ```js
-import { OAuthConfig } from 'aurelia-oauth';
+import { OAuthService } from 'aurelia-oauth';
 
-function configureOauth(oauthService: OAuthConfig) {
+function configureOauth(oauthService: OAuthService, oauthTokenService: OAuthTokenService, configureClient: (client: any) => void, client: any) {
   oauthService.configure(
     {
       loginUrl: 'https://login.microsoftonline.com/{tenantId}/oauth2/authorize',
@@ -63,13 +70,15 @@ function configureOauth(oauthService: OAuthConfig) {
 	  clientId: '{clientId}',
       alwaysRequireLogin: true
     });
+
+  configureClient(client);
 }
 ```
 The function below for OAuth configuration provides sample values of Google API authorization endpoint. This should all work in the local environment by using my test API endpoint if you choose to host web app using  the following address - http://localhost:9000/
 ```js
-import { OAuthConfig, OAuthTokenConfig } from 'aurelia-oauth';
+import { OAuthService, OAuthTokenService } from 'aurelia-oauth';
 
-function configureOauth(oauthService: OAuthConfig, oauthTokenService: OAuthTokenConfig) {
+function configureOauth(oauthService: OAuthService, oauthTokenService: OAuthTokenService, configureClient: (client: any) => void, client: any) {
   oauthService.configure(
     {
       loginUrl: 'https://accounts.google.com/o/oauth2/auth',
@@ -87,8 +96,12 @@ function configureOauth(oauthService: OAuthConfig, oauthTokenService: OAuthToken
         idToken: 'id_token'
       }
     });
+
+  configureClient(client);
 }
 ```
+
+In the code samples above, configureClient function is responsible for configuring fetch or http client prior first API request is made. Basically, it will configure client using OAuthInterceptor to automatically add authorization header when performing requests. 
 
 ## Configure routing to use authentication
 
@@ -96,7 +109,7 @@ When setting configuration for aurelia-oauth plugin you can choose if you want t
 ```js
 alwaysRequireLogin: true
 ```
-Default value for the above property is false, but passing true value means, that application should require user login in all its routes except the particular route provide setting overriding this behavior. Every route in the application can configure setting to require authentication or not. This step is not necessary, but can be done as follows:
+Default value for the above property is false, but passing true value means, that application should require user login in all its routes except the particular route provide setting overriding this behaviour. Every route in the application can configure setting to require authentication or not. This step is not necessary, but can be done as follows:
 ```js
 { route: 'users', name: 'users', moduleId: 'users', nav: true, title: 'Github Users', settings: { requireLogin: true } }
 ```
@@ -223,6 +236,27 @@ export interface OAuthTokenConfig {
 }
 ```
 
-## Support for aurelia-fetch-client
+## Added support for both aurelia-fetch-client and aurelia-http-client
 
-Currently, aurelia-oauth provides automatic feature of adding authorization header to every request by using custom interceptor. To implement this, plugin uses **aurelia-http-client** which has support for cancelling requests in case when token has expired before the request has occurred. The following issue considering poor fetch API implementation will be investigated further in the future to adjust aurelia-oauth plugin.
+Currently, aurelia-oauth provides basic feature of adding authorization header to every request by using custom interceptor, which should work well with both client plugins. However, there is one slight difference in behaviour and in case of **aurelia-http-client** which has support for cancelling requests, plugin can abort request when checks that token has expired before the request was made. In both plugins the request response, which is passed in the promise chain contains additional flag **tokenExpired** in case that, was the reason request has failed. 
+
+```js
+// After request has failed, this flag can be checked
+this.http.fetch('https://api.com')
+  .then((response: any) => {
+    if (response.tokenExpired) {
+      console.log('Token expired!')
+    }
+
+    return response;
+  })
+  ...
+
+// In case of http-client and request aborting, 
+// this flag can be checked in the Request Message,
+// because there is no actual response from the server
+this.http.get('https://api.com')
+  .catch(reason => { 
+    alert(reason.requestMessage.tokenExpired); 
+  });
+```

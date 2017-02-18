@@ -18,7 +18,6 @@ System.config({
   map: {
     "aurelia-dependency-injection": "npm:aurelia-dependency-injection@1.0.0",
     "aurelia-event-aggregator": "npm:aurelia-event-aggregator@1.0.0",
-    "aurelia-http-client": "npm:aurelia-http-client@1.0.0",
     "aurelia-polyfills": "npm:aurelia-polyfills@1.0.0",
     "aurelia-router": "npm:aurelia-router@1.0.2",
     "babel": "npm:babel-core@5.8.38",
@@ -54,10 +53,6 @@ System.config({
     },
     "npm:aurelia-event-aggregator@1.0.0": {
       "aurelia-logging": "npm:aurelia-logging@1.0.0"
-    },
-    "npm:aurelia-http-client@1.0.0": {
-      "aurelia-pal": "npm:aurelia-pal@1.0.0",
-      "aurelia-path": "npm:aurelia-path@1.0.0"
     },
     "npm:aurelia-metadata@1.0.0": {
       "aurelia-pal": "npm:aurelia-pal@1.0.0"

@@ -1,5 +1,4 @@
 import { EventAggregator } from 'aurelia-event-aggregator';
-import { HttpRequestMessage } from 'aurelia-http-client';
 import { autoinject } from 'aurelia-dependency-injection';
 
 import { OAuthService } from './oauth-service';
@@ -13,41 +12,50 @@ export default class OAuthInterceptor {
         private oauthTokenService: OAuthTokenService,
         private eventAggregator: EventAggregator) { }
 
-    public request = (config: HttpRequestMessage): any => {
-        if (config.url.indexOf(window.location.origin) > -1) {
-            return config;
-        }
-
+    public request = (config: any): any => {
         if (this.oauthTokenService.getToken() && !this.oauthTokenService.isTokenValid()) {
+            config.tokenExpired = true;
             this.eventAggregator.publish(OAuthService.INVALID_TOKEN_EVENT);
 
             return Promise.reject(config);
         }
 
-        if (!config.headers.get(AUTHORIZATION_HEADER)) {
+        // Support for http-client
+        if (config.headers.add && !config.headers.get(AUTHORIZATION_HEADER)) {
             config.headers.add(AUTHORIZATION_HEADER, this.oauthTokenService.getAuthorizationHeader());
+        }
+
+        // Support for fetch-client
+        if (config.headers.append && !config.headers.get(AUTHORIZATION_HEADER)) {
+            config.headers.append(AUTHORIZATION_HEADER, this.oauthTokenService.getAuthorizationHeader());
         }
 
         return config;
     };
 
-    public responseError = (response): any => {
-        // Catch 'invalid_request' and 'invalid_grant' errors and ensure that the 'token' is removed.
-        if (response.status === 400 && response.data &&
-            (response.data.error === 'invalid_request' || response.data.error === 'invalid_grant')) {
+    public response = (response: any, request?: any): any => {
+        this.handleRequestError(response, request);
+        return response;
+    };
 
-            this.eventAggregator.publish(OAuthService.INVALID_TOKEN_EVENT, response);
-        }
-
-        // Catch 'invalid_token' and 'unauthorized' errors.
-        let tokenType = this.oauthTokenService.getTokenType();
-        if (response.status === 401 &&
-            (response.data && response.data.error === 'invalid_token') ||
-            (response.headers.get('www-authenticate') && response.headers.get('www-authenticate').indexOf(tokenType) === 0)) {
-
-            this.eventAggregator.publish(OAuthService.INVALID_TOKEN_EVENT, response);
-        }
-
+    public responseError = (response: any, request?: any): any => {
+        this.handleRequestError(response, request);
         return Promise.reject(response);
     };
+
+    private handleRequestError(response: any, requestMessage?: any) {
+        // Support for http-client
+        if (response && response.statusCode && response.statusCode === 401
+            && !response.requestMessage.tokenExpired && !this.oauthTokenService.isTokenValid()) {
+            response.tokenExpired = true;
+            this.eventAggregator.publish(OAuthService.INVALID_TOKEN_EVENT, response);
+        }
+
+        // Support for fetch-client
+        if (response && response.status && response.status === 401
+            && !requestMessage.tokenExpired && !this.oauthTokenService.isTokenValid()) {
+            response.tokenExpired = true;
+            this.eventAggregator.publish(OAuthService.INVALID_TOKEN_EVENT, response);
+        }
+    }
 }

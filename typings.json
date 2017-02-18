@@ -9,7 +9,6 @@
 		"aurelia-framework": "github:aurelia/framework",
 		"aurelia-history": "github:aurelia/history",
 		"aurelia-history-browser": "github:aurelia/history-browser",
-		"aurelia-http-client": "github:aurelia/http-client",
 		"aurelia-loader": "github:aurelia/loader",
 		"aurelia-logging": "github:aurelia/logging",
 		"aurelia-logging-console": "github:aurelia/logging-console",
