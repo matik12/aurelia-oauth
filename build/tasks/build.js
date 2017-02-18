@@ -9,22 +9,26 @@ var compilerOptions = require('../babel-options');
 var assign = Object.assign || require('object.assign');
 var typescript = require('gulp-typescript');
 var tsc = require('typescript');
+var merge = require('merge2');
 
 var tsProjectES6 = typescript.createProject('./tsconfig.json', { typescript: tsc });
 var tsProjectAMD = typescript.createProject('./tsconfig.json', { typescript: tsc, target: 'es5', module: 'amd' });
 var tsProjectCJS = typescript.createProject('./tsconfig.json', { typescript: tsc, target: 'es5', module: 'commonjs' });
-var tsProjectSystem = typescript.createProject('./tsconfig.json', { typescript: tsc, target: 'es5', module: 'system' });
+var tsProjectSystem = typescript.createProject('./tsconfig.json', { typescript: tsc, target: 'es5', module: 'system', declaration: true });
 
 function buildFromTs(tsProject, outputPath, includeEs6Dts) {
     var src = paths.dtsSrc.concat(paths.source);
+    var tsResult = gulp.src(src)
+        .pipe(plumber())
+        .pipe(sourcemaps.init({loadMaps: true}))    
+        .pipe(changed(outputPath, {extension: '.js'}))
+        .pipe(tsProject());
 
-    return gulp.src(src)
-    .pipe(plumber())
-    .pipe(sourcemaps.init({loadMaps: true}))    
-    .pipe(changed(outputPath, {extension: '.js'}))
-    .pipe(typescript(tsProject))  
-    .pipe(sourcemaps.write({includeContent: true}))
-    .pipe(gulp.dest(outputPath));
+    return merge([
+        tsResult.dts.pipe(gulp.dest(paths.output + 'dts')),
+        tsResult.js.pipe(sourcemaps.write({includeContent: true}))
+            .pipe(gulp.dest(outputPath))
+    ]);
 }
 
 gulp.task('build-html-ts', function () {
@@ -73,16 +77,11 @@ gulp.task('build-system', ['build-html-system'], function () {
     return buildFromTs(tsProjectSystem, paths.output + 'system', true);
 });
 
-gulp.task('build-ts-typings', function () {
-  return gulp.src(paths.dts)
-    .pipe(gulp.dest(paths.output));
-});
-
 gulp.task('build', function(callback) {
   return runSequence(
     'clean',
     'lint',
-    ['build-ts', 'build-es6', 'build-commonjs', 'build-amd', 'build-system', 'build-ts-typings'],
+    ['build-ts', 'build-es6', 'build-commonjs', 'build-amd', 'build-system'],
     callback
   );
 });

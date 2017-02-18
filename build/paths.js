@@ -9,7 +9,6 @@ module.exports = {
   style: 'styles/**/*.css',
   output: 'dist/',
   doc:'./doc',
-  dts: 'custom_typings/aurelia-oauth.d.ts',
   dtsSrc: [
     'typings/**/*.ts', 
     'custom_typings/**/*.ts', 

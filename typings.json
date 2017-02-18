@@ -1,6 +1,6 @@
 {
 	"name": "aurelia-oauth",
-	"main": "dist/aurelia-oauth.d.ts",
+	"main": "dist/dts/aurelia-oauth.d.ts",
 	"devDependencies": {
 		"aurelia-binding": "github:aurelia/binding",
 		"aurelia-bootstrapper": "github:aurelia/bootstrapper",
