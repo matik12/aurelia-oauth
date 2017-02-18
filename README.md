@@ -33,7 +33,7 @@ npm install aurelia-oauth --save
 ```
 Using typescript you can install definitions:
 ```
-typings install github:matik12/aurelia-oauth --save --global
+typings install github:matik12/aurelia-oauth --save
 ```
 
 # Usage guide
@@ -53,7 +53,9 @@ export function configure(aurelia: Aurelia) {
 ```
 The configuration for Azure Active Directory is very simple, because it uses default parameter values in plugin internal set up. Just need to replace {tenantId} and {clientId} with your Azure Application real values and you are up and running.
 ```js
-function configureOauth(oauthService: IOAuthConfig) {
+import { OAuthConfig } from 'aurelia-oauth';
+
+function configureOauth(oauthService: OAuthConfig) {
   oauthService.configure(
     {
       loginUrl: 'https://login.microsoftonline.com/{tenantId}/oauth2/authorize',
@@ -65,7 +67,9 @@ function configureOauth(oauthService: IOAuthConfig) {
 ```
 The function below for OAuth configuration provides sample values of Google API authorization endpoint. This should all work in the local environment by using my test API endpoint if you choose to host web app using  the following address - http://localhost:9000/
 ```js
-function configureOauth(oauthService: IOAuthConfig, oauthTokenService: IOAuthTokenConfig) {
+import { OAuthConfig, OAuthTokenConfig } from 'aurelia-oauth';
+
+function configureOauth(oauthService: OAuthConfig, oauthTokenService: OAuthTokenConfig) {
   oauthService.configure(
     {
       loginUrl: 'https://accounts.google.com/o/oauth2/auth',
@@ -102,7 +106,7 @@ The **requireLogin** setting overrides global authentication configuration and c
 
 To provide logout functionality, simply add button or anchor to the html and bind it to the logout method in the backing the view-model as shown below.
 ```js
-import {OAuthService} from 'aurelia-oauth';
+import { OAuthService } from 'aurelia-oauth';
 
 @autoinject()
 export class Navigation {
@@ -124,7 +128,7 @@ The supported events are as follows:
 
 If you are using Typescript, in definitions there are declared const properties for this events to use them when subscribing to an event. 
 ```js
-import {OAuthService} from 'aurelia-oauth';
+import { OAuthService } from 'aurelia-oauth';
 
 eventAggregator.subscribe(OAuthService.LOGIN_SUCCESS_EVENT, () => { ... });
 ```
@@ -142,13 +146,15 @@ This plugin should work with all modern browsers, although it is still in early 
 </head>
 ```
 
-## Authentication class interface
+## Useful classes & interfaces
 
 ```js
-interface IOAuthService {
-    config: IOAuthConfig;
-    
-    configure: (config: IOAuthConfig) => IOAuthConfig;
+export class OAuthService {
+    static LOGIN_SUCCESS_EVENT(): string;
+    static INVALID_TOKEN_EVENT(): string;
+    config: OAuthConfig;
+
+    configure: (config: OAuthConfig) => OAuthConfig;
 
     isAuthenticated: () => boolean;
     login: () => void;
@@ -157,25 +163,46 @@ interface IOAuthService {
     setTokenOnRedirect: () => void;
 }
 
-interface IOAuthTokenService {
-    config: IOAuthTokenConfig;
+export class OAuthTokenService {
+    config: OAuthTokenConfig;
 
-    configure: (config: IOAuthTokenConfig) => IOAuthTokenConfig;
+    configure: (config: OAuthTokenConfig) => OAuthTokenConfig;
 
     isTokenValid: () => boolean;
-    createToken: (urlTokenData: any) => IOAuthTokenData;
-    setToken: (data: IOAuthTokenData) => void;
-    getToken: () => IOAuthTokenData;
-    removeToken: () => void; 
+    createToken: (urlTokenData: any) => OAuthTokenData;
+    setToken: (data: OAuthTokenData) => void;
+    getToken: () => OAuthTokenData;
+    removeToken: () => void;
     getAuthorizationHeader: () => string;
 }
+
+export class OAuthInterceptor {
+    request: (config) => any;
+    responseError: (response) => any;
+}
 ```
-More on this to be done soon...
+
+```js
+export interface OAuthTokenData {
+    token: string;
+    tokenType: string;
+    expiresAt: number;
+    jwtClaims?: JwtClaims;
+}
+
+export interface JwtClaims {
+    exp: number;
+    nbf?: number;
+    iat?: number;
+    ppid?: string;
+    given_name?: string;
+}
+```
 
 ## Plugin configuration parameters (config interfaces)
 
 ```js
-interface IOAuthConfig {
+export interface OAuthConfig {
     loginUrl: string;
     logoutUrl: string;
     clientId: string;
@@ -186,7 +213,7 @@ interface IOAuthConfig {
     alwaysRequireLogin?: boolean;
 }
 
-interface IOAuthTokenConfig {
+export interface OAuthTokenConfig {
     name: string;
     urlTokenParameters?: {
         idToken: string;
@@ -198,4 +225,4 @@ interface IOAuthTokenConfig {
 
 ## Support for aurelia-fetch-client
 
-Currently, aurelia-oauth provides automatic feature of adding authorization header to every request by using custom interceptor. To implement this, plugin uses **aurelia-http-client** which has support for cancelling requests in case when token has expired before request occurred. The following issue considering poor fetch API implementation will be investigated further in the future to adjust aurelia-oauth plugin. More on this to be done soon...
+Currently, aurelia-oauth provides automatic feature of adding authorization header to every request by using custom interceptor. To implement this, plugin uses **aurelia-http-client** which has support for cancelling requests in case when token has expired before the request has occurred. The following issue considering poor fetch API implementation will be investigated further in the future to adjust aurelia-oauth plugin.
