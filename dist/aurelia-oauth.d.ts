@@ -1,66 +1,36 @@
-declare module 'aurelia-oauth' {
-    export class OAuthService implements IOAuthService {
-        static LOGIN_SUCCESS_EVENT(): string;
-        static INVALID_TOKEN_EVENT(): string;
-        config: IOAuthConfig;
+export class OAuthService {
+    static LOGIN_SUCCESS_EVENT(): string;
+    static INVALID_TOKEN_EVENT(): string;
+    config: OAuthConfig;
 
-        constructor();
+    configure: (config: OAuthConfig) => OAuthConfig;
 
-        configure: (config: IOAuthConfig) => IOAuthConfig;
-
-        isAuthenticated: () => boolean;
-        login: () => void;
-        logout: () => void;
-        loginOnStateChange: (toState) => boolean;
-        setTokenOnRedirect: () => void;
-    }
-
-    export class OAuthTokenService implements IOAuthTokenService {
-        config: IOAuthTokenConfig;
-
-        constructor();
-
-        configure: (config: IOAuthTokenConfig) => IOAuthTokenConfig;
-
-        isTokenValid: () => boolean;
-        createToken: (urlTokenData: any) => IOAuthTokenData;
-        setToken: (data: IOAuthTokenData) => void;
-        getToken: () => IOAuthTokenData;
-        removeToken: () => void;
-        getAuthorizationHeader: () => string;
-    }
+    isAuthenticated: () => boolean;
+    login: () => void;
+    logout: () => void;
+    loginOnStateChange: (toState) => boolean;
+    setTokenOnRedirect: () => void;
 }
 
-interface IOAuthTokenService {
-    config: IOAuthTokenConfig;
+export class OAuthTokenService {
+    config: OAuthTokenConfig;
 
-    configure: (config: IOAuthTokenConfig) => IOAuthTokenConfig;
+    configure: (config: OAuthTokenConfig) => OAuthTokenConfig;
 
     isTokenValid: () => boolean;
-    createToken: (urlTokenData: any) => IOAuthTokenData;
-    setToken: (data: IOAuthTokenData) => void;
-    getToken: () => IOAuthTokenData;
+    createToken: (urlTokenData: any) => OAuthTokenData;
+    setToken: (data: OAuthTokenData) => void;
+    getToken: () => OAuthTokenData;
     removeToken: () => void;
     getAuthorizationHeader: () => string;
 }
 
-interface IOAuthTokenData {
-    token: string;
-    tokenType: string;
-    expiresAt: number;
-    jwtClaims?: IJwtClaims;
+export class OAuthInterceptor {
+    request: (config) => any;
+    responseError: (response) => any;
 }
 
-interface IOAuthTokenConfig {
-    name: string;
-    urlTokenParameters?: {
-        idToken: string;
-        tokenType?: string;
-    };
-    expireOffsetSeconds?: number;
-}
-
-interface IOAuthConfig {
+export interface OAuthConfig {
     loginUrl: string;
     logoutUrl: string;
     clientId: string;
@@ -71,19 +41,23 @@ interface IOAuthConfig {
     alwaysRequireLogin?: boolean;
 }
 
-interface IOAuthService {
-    config: IOAuthConfig;
-
-    configure: (config: IOAuthConfig) => IOAuthConfig;
-
-    isAuthenticated: () => boolean;
-    login: () => void;
-    logout: () => void;
-    loginOnStateChange: (toState) => boolean;
-    setTokenOnRedirect: () => void;
+export interface OAuthTokenConfig {
+    name: string;
+    urlTokenParameters?: {
+        idToken: string;
+        tokenType?: string;
+    };
+    expireOffsetSeconds?: number;
 }
 
-interface IJwtClaims {
+export interface OAuthTokenData {
+    token: string;
+    tokenType: string;
+    expiresAt: number;
+    jwtClaims?: JwtClaims;
+}
+
+export interface JwtClaims {
     exp: number;
     nbf?: number;
     iat?: number;

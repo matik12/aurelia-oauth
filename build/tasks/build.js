@@ -81,6 +81,7 @@ gulp.task('build-ts-typings', function () {
 gulp.task('build', function(callback) {
   return runSequence(
     'clean',
+    'lint',
     ['build-ts', 'build-es6', 'build-commonjs', 'build-amd', 'build-system', 'build-ts-typings'],
     callback
   );

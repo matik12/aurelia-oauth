@@ -1,5 +1,5 @@
 import { EventAggregator } from 'aurelia-event-aggregator';
-import { Headers, HttpRequestMessage } from 'aurelia-http-client';
+import { HttpRequestMessage } from 'aurelia-http-client';
 import { autoinject } from 'aurelia-dependency-injection';
 
 import { OAuthService } from './oauth-service';
@@ -22,20 +22,20 @@ export default class OAuthInterceptor {
             this.eventAggregator.publish(OAuthService.INVALID_TOKEN_EVENT);
 
             return Promise.reject(config);
-        }        
-
-        if (!config.headers.get(AUTHORIZATION_HEADER)) {
-            config.headers.add(AUTHORIZATION_HEADER, this.oauthTokenService.getAuthorizationHeader());             
         }
 
-        return config;            
+        if (!config.headers.get(AUTHORIZATION_HEADER)) {
+            config.headers.add(AUTHORIZATION_HEADER, this.oauthTokenService.getAuthorizationHeader());
+        }
+
+        return config;
     };
 
     public responseError = (response): any => {
         // Catch 'invalid_request' and 'invalid_grant' errors and ensure that the 'token' is removed.
         if (response.status === 400 && response.data &&
             (response.data.error === 'invalid_request' || response.data.error === 'invalid_grant')) {
-            
+
             this.eventAggregator.publish(OAuthService.INVALID_TOKEN_EVENT, response);
         }
 
@@ -44,7 +44,7 @@ export default class OAuthInterceptor {
         if (response.status === 401 &&
             (response.data && response.data.error === 'invalid_token') ||
             (response.headers.get('www-authenticate') && response.headers.get('www-authenticate').indexOf(tokenType) === 0)) {
-            
+
             this.eventAggregator.publish(OAuthService.INVALID_TOKEN_EVENT, response);
         }
 

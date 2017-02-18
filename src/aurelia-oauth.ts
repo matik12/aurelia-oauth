@@ -1,5 +1,5 @@
 import { FrameworkConfiguration } from 'aurelia-framework';
-import { AppRouter, RouterConfiguration } from 'aurelia-router';
+import { AppRouter } from 'aurelia-router';
 import { HttpClient } from 'aurelia-http-client';
 
 import { OAuthService } from './oauth-service';
@@ -9,10 +9,10 @@ import { OAuthAuthorizeStep } from './oauth-authorize-step';
 
 export function configure(framework: FrameworkConfiguration, config: (oauthService, oauthTokenService) => void) {
 
-    var oauthService = <OAuthService>framework.container.get(OAuthService);
-    var oauthTokenService = <OAuthTokenService>framework.container.get(OAuthTokenService);
-    var httpClient = <HttpClient>framework.container.get(HttpClient);
-    var oauthInterceptor = <OAuthInterceptor>framework.container.get(OAuthInterceptor);
+    const oauthService = <OAuthService>framework.container.get(OAuthService);
+    const oauthTokenService = <OAuthTokenService>framework.container.get(OAuthTokenService);
+    const httpClient = <HttpClient>framework.container.get(HttpClient);
+    const oauthInterceptor = <OAuthInterceptor>framework.container.get(OAuthInterceptor);
 
     config(oauthService, oauthTokenService);
 
@@ -29,5 +29,6 @@ export function configure(framework: FrameworkConfiguration, config: (oauthServi
 
 export {
   OAuthService,
-  OAuthTokenService
+  OAuthTokenService,
+  OAuthInterceptor
 }

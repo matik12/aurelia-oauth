@@ -1,23 +1,31 @@
-interface IJwtToken {
+interface JwtToken {
     header: string;
     payload: string;
     signature: string;
 }
 
-export default class JwtTokenService {    
-    public getJwtClaims = (encodedToken: string): IJwtClaims => {
-        var jwtToken = this.createJwtToken(encodedToken);
-        var base64Decoded = this.decodeBase64String(jwtToken.payload);
+export interface JwtClaims {
+    exp: number;
+    nbf?: number;
+    iat?: number;
+    ppid?: string;
+    given_name?: string;
+}
+
+export default class JwtTokenService {
+    public getJwtClaims = (encodedToken: string): JwtClaims => {
+        const jwtToken = this.createJwtToken(encodedToken);
+        const base64Decoded = this.decodeBase64String(jwtToken.payload);
 
         return JSON.parse(base64Decoded);
     };
 
-    private createJwtToken = (token: string): IJwtToken => {
-        var jwtTokenPartsRegex = /^([^\.\s]*)\.([^\.\s]+)\.([^\.\s]*)$/;
-        var matches = jwtTokenPartsRegex.exec(token);
-        var isValidToken = matches && matches.length === 4;
-        
-        return <IJwtToken>{
+    private createJwtToken = (token: string): JwtToken => {
+        const jwtTokenPartsRegex = /^([^\.\s]*)\.([^\.\s]+)\.([^\.\s]*)$/;
+        const matches = jwtTokenPartsRegex.exec(token);
+        const isValidToken = matches && matches.length === 4;
+
+        return <JwtToken>{
             header: isValidToken ? matches[1] : '',
             payload: isValidToken ? matches[2] : '',
             signature: isValidToken ? matches[3] : ''

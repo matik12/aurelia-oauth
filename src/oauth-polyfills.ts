@@ -5,7 +5,7 @@ export function objectAssign(target, source) {
 
     target = Object(target);
 
-    for (var key in source) {
+    for (let key in source) {
         if (Object.prototype.hasOwnProperty.call(source, key)) {
             target[key] = source[key];
         }

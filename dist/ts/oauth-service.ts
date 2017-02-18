@@ -1,18 +1,30 @@
 import { EventAggregator } from 'aurelia-event-aggregator';
 import { autoinject } from 'aurelia-dependency-injection';
 
-import { OAuthTokenService } from './oauth-token-service';
+import { OAuthTokenService, OAuthTokenData } from './oauth-token-service';
 import UrlHashService from './url-hash-service';
 import LocalStorageService from './local-storage-service';
 import { objectAssign } from './oauth-polyfills';
 
 const OAUTH_STARTPAGE_STORAGE_KEY: string = 'oauth.startPage';
 
-@autoinject()
-export class OAuthService implements IOAuthService {
+export interface OAuthConfig {
+    loginUrl: string;
+    logoutUrl: string;
+    clientId: string;
+    logoutRedirectParameterName?: string;
+    scope?: string;
+    state?: string;
+    redirectUri?: string;
+    alwaysRequireLogin?: boolean;
+}
 
-    private defaults: IOAuthConfig;
-    public config: IOAuthConfig;
+@autoinject()
+export class OAuthService {
+
+    public config: OAuthConfig;
+
+    private defaults: OAuthConfig;
 
     public static get LOGIN_SUCCESS_EVENT(): string { return 'oauth:loginSuccess'; }
     public static get INVALID_TOKEN_EVENT(): string { return 'oauth:invalidToken'; }
@@ -22,7 +34,7 @@ export class OAuthService implements IOAuthService {
         private urlHashService: UrlHashService,
         private localStorageService: LocalStorageService,
         private eventAggregator: EventAggregator) {
-    
+
         this.defaults = {
             loginUrl: null,
             logoutUrl: null,
@@ -34,7 +46,7 @@ export class OAuthService implements IOAuthService {
         };
     }
 
-    public configure = (config: IOAuthConfig): IOAuthConfig => {
+    public configure = (config: OAuthConfig): OAuthConfig => {
         if (this.config) {
             throw new Error('OAuthProvider already configured.');
         }
@@ -52,8 +64,8 @@ export class OAuthService implements IOAuthService {
         this.config = objectAssign(this.defaults, config);
 
         // Redirect is set to current location by default
-        var existingHash = window.location.hash;
-        var pathDefault = window.location.href;
+        const existingHash = window.location.hash;
+        let pathDefault = window.location.href;
 
         // Remove not needed parts from urls.
         if (existingHash) {
@@ -74,7 +86,7 @@ export class OAuthService implements IOAuthService {
     };
 
     public login = (): void => {
-        var redirectUrl = `${this.config.loginUrl}?` +
+        let redirectUrl = `${this.config.loginUrl}?` +
             `response_type=${this.oAuthTokenService.config.name}&` +
             `client_id=${encodeURIComponent(this.config.clientId)}&` +
             `redirect_uri=${encodeURIComponent(this.config.redirectUri)}&` +
@@ -83,21 +95,21 @@ export class OAuthService implements IOAuthService {
         if (this.config.scope) {
             redirectUrl += `&scope=${encodeURIComponent(this.config.scope)}`;
         }
-        
+
         if (this.config.state) {
             redirectUrl += `&state=${encodeURIComponent(this.config.state)}`;
         }
-        
+
         window.location.href = redirectUrl;
     };
 
     public logout = (): void => {
-        var redirectUrl = `${this.config.logoutUrl}?` +
+        const redirectUrl = `${this.config.logoutUrl}?` +
             `${this.config.logoutRedirectParameterName}=${encodeURIComponent(this.config.redirectUri)}`;
 
         window.location.href = redirectUrl;
         this.oAuthTokenService.removeToken();
-    };   
+    };
 
     public loginOnStateChange = (toState): boolean => {
         if (toState && this.isLoginRequired(toState) && !this.isAuthenticated() && !this.getTokenDataFromUrl()) {
@@ -110,7 +122,7 @@ export class OAuthService implements IOAuthService {
                 }
 
                 this.localStorageService.set<string>(OAUTH_STARTPAGE_STORAGE_KEY, url);
-            }           
+            }
 
             this.login();
 
@@ -120,16 +132,16 @@ export class OAuthService implements IOAuthService {
         return false;
     };
 
-    public setTokenOnRedirect = (): void => {        
-        var tokenData = this.getTokenDataFromUrl();
+    public setTokenOnRedirect = (): void => {
+        const tokenData = this.getTokenDataFromUrl();
 
         if (!this.isAuthenticated() && tokenData) {
             this.oAuthTokenService.setToken(tokenData);
 
             if (this.localStorageService.isStorageSupported() && this.localStorageService.get(OAUTH_STARTPAGE_STORAGE_KEY)) {
-                var startPage = this.localStorageService.get<string>(OAUTH_STARTPAGE_STORAGE_KEY);
+                const startPage = this.localStorageService.get<string>(OAUTH_STARTPAGE_STORAGE_KEY);
 
-                this.localStorageService.remove(OAUTH_STARTPAGE_STORAGE_KEY);                
+                this.localStorageService.remove(OAUTH_STARTPAGE_STORAGE_KEY);
                 window.location.href = startPage;
             } else {
                 // Redirect to the base application route
@@ -140,16 +152,16 @@ export class OAuthService implements IOAuthService {
         }
     };
 
-    private isLoginRequired = (state): boolean => { 
-        var routeHasConfig = state.settings && state.settings.requireLogin !== undefined;
-        var routeRequiresLogin = routeHasConfig && state.settings.requireLogin ? true : false;
+    private isLoginRequired = (state): boolean => {
+        const routeHasConfig = state.settings && state.settings.requireLogin !== undefined;
+        const routeRequiresLogin = routeHasConfig && state.settings.requireLogin ? true : false;
 
         return routeHasConfig ? routeRequiresLogin : this.config.alwaysRequireLogin;
     };
 
-    private getTokenDataFromUrl = (): IOAuthTokenData => {
-        var hashData = this.urlHashService.getHashData();
-        var tokenData = this.oAuthTokenService.createToken(hashData);
+    private getTokenDataFromUrl = (): OAuthTokenData => {
+        const hashData = this.urlHashService.getHashData();
+        const tokenData = this.oAuthTokenService.createToken(hashData);
 
         return tokenData;
     };

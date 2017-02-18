@@ -21,9 +21,7 @@
     "type": "git",
     "url": "https://github.com/matik12/aurelia-oauth.git"
   },
-  "scripts": {
-    "postinstall": "./node_modules/.bin/typings install"
-  },
+  "scripts": {},
   "jspm": {
     "registry": "npm",
     "main": "aurelia-oauth",
@@ -38,26 +36,30 @@
       "aurelia-router": "^1.0.0"
     },
     "devDependencies": {
-      "aurelia-polyfills": "^1.0.0"
+      "aurelia-polyfills": "^1.0.0",
+      "babel": "babel-core@^5.8.24",
+      "babel-runtime": "^5.8.24",
+      "core-js": "^1.1.4"
     }
   },
   "devDependencies": {
-    "aurelia-tools": "^0.2.4",    
+    "aurelia-tools": "^0.2.4",
+    "babel-eslint": "^4.1.3",
     "conventional-changelog": "1.1.0",
     "del": "^2.2.1",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-bump": "^2.2.0",
+    "gulp-changed": "^1.1.0",
     "gulp-eslint": "^3.0.1",
-	"gulp-sourcemaps": "^1.3.0",
+    "gulp-notify": "^2.2.0",
+    "gulp-plumber": "^0.6.6",
+    "gulp-sourcemaps": "^1.3.0",
     "gulp-tslint": "^5.0.0",
     "gulp-typescript": "^2.13.6",
     "gulp-yuidoc": "^0.1.2",
-	"gulp-plumber": "^0.6.6",
-    "gulp-notify": "^2.2.0",
-    "gulp-changed": "^1.1.0",
-    "babel-eslint": "^4.1.3",
     "jasmine-core": "^2.4.1",
+    "jspm": "^0.16.52",
     "karma": "^1.1.2",
     "karma-babel-preprocessor": "^6.0.1",
     "karma-chrome-launcher": "^1.0.1",
@@ -67,10 +69,10 @@
     "object.assign": "^4.0.4",
     "require-dir": "^0.3.0",
     "run-sequence": "^1.2.2",
-    "vinyl-paths": "^2.1.0",
     "tslint": "^3.11.0",
     "typescript": ">=1.9.0-dev || ^2.0.0",
     "typings": "^1.3.0",
+    "vinyl-paths": "^2.1.0",
     "yargs": "^4.8.1"
   }
 }

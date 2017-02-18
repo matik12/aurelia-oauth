@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/matik12/aurelia-oauth.svg?branch=master)](https://travis-ci.org/matik12/aurelia-oauth)
+
 [**Contributors needed**: I'm looking for people that are willing to help me maintain and improve this plugin.](https://github.com/matik12/aurelia-oauth/issues/1)
 
 ---
