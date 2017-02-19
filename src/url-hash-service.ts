@@ -1,6 +1,6 @@
 export default class UrlHashService {
-    public getHash = (): string => {
-        let hash = window.location.hash;
+    public getHash = (hashValue?: string): string => {
+        let hash = hashValue ? hashValue : window.location.hash;
 
         if (hash.indexOf('#/') > -1) {
             hash = hash.substring(hash.indexOf('#/') + 2);
@@ -11,8 +11,8 @@ export default class UrlHashService {
         return hash;
     };
 
-    public getHashData = (): any => {
-        const hash = this.getHash();
+    public getHashData = (hashValue?: string): any => {
+        const hash = this.getHash(hashValue);
         const searchRegex = /([^&=]+)=?([^&]*)/g;
         const hashData = {};
 

@@ -25,6 +25,7 @@ export declare class OAuthTokenService {
     getIdToken: () => string;
     getAuthorizationHeader: () => string;
     getTokenType: () => string;
+    getTokenExpirationTime: () => number;
     removeToken: () => OAuthTokenData;
     isTokenValid: () => boolean;
     private getTimeNow;

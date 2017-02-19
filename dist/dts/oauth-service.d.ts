@@ -11,6 +11,7 @@ export interface OAuthConfig {
     state?: string;
     redirectUri?: string;
     alwaysRequireLogin?: boolean;
+    autoTokenRenewal?: boolean;
 }
 export declare class OAuthService {
     private oAuthTokenService;
@@ -32,4 +33,6 @@ export declare class OAuthService {
     private getTokenDataFromUrl;
     private getBaseRouteUrl;
     private getSimpleNonceValue;
+    private getRedirectUrl();
+    private setAutomaticTokenRenewal();
 }

@@ -1,6 +1,6 @@
 export default class UrlHashService {
-    getHash: () => string;
-    getHashData: () => any;
+    getHash: (hashValue?: string) => string;
+    getHashData: (hashValue?: string) => any;
     clearHash: () => void;
     private decodeUrlData;
 }

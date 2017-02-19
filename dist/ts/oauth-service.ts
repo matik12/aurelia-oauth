@@ -17,6 +17,7 @@ export interface OAuthConfig {
     state?: string;
     redirectUri?: string;
     alwaysRequireLogin?: boolean;
+    autoTokenRenewal?: boolean;
 }
 
 @autoinject()
@@ -42,7 +43,8 @@ export class OAuthService {
             logoutRedirectParameterName: 'post_logout_redirect_uri',
             scope: null,
             state: null,
-            alwaysRequireLogin: false
+            alwaysRequireLogin: false,
+            autoTokenRenewal: true
         };
     }
 
@@ -86,21 +88,7 @@ export class OAuthService {
     };
 
     public login = (): void => {
-        let redirectUrl = `${this.config.loginUrl}?` +
-            `response_type=${this.oAuthTokenService.config.name}&` +
-            `client_id=${encodeURIComponent(this.config.clientId)}&` +
-            `redirect_uri=${encodeURIComponent(this.config.redirectUri)}&` +
-            `nonce=${encodeURIComponent(this.getSimpleNonceValue())}`;
-
-        if (this.config.scope) {
-            redirectUrl += `&scope=${encodeURIComponent(this.config.scope)}`;
-        }
-
-        if (this.config.state) {
-            redirectUrl += `&state=${encodeURIComponent(this.config.state)}`;
-        }
-
-        window.location.href = redirectUrl;
+        window.location.href = this.getRedirectUrl();
     };
 
     public logout = (): void => {
@@ -149,6 +137,10 @@ export class OAuthService {
             }
 
             this.eventAggregator.publish(OAuthService.LOGIN_SUCCESS_EVENT, tokenData);
+
+            if (this.config.autoTokenRenewal) {
+                this.setAutomaticTokenRenewal();
+            }
         }
     };
 
@@ -159,8 +151,8 @@ export class OAuthService {
         return routeHasConfig ? routeRequiresLogin : this.config.alwaysRequireLogin;
     };
 
-    private getTokenDataFromUrl = (): OAuthTokenData => {
-        const hashData = this.urlHashService.getHashData();
+    private getTokenDataFromUrl = (hash?: string): OAuthTokenData => {
+        const hashData = this.urlHashService.getHashData(hash);
         const tokenData = this.oAuthTokenService.createToken(hashData);
 
         return tokenData;
@@ -172,5 +164,53 @@ export class OAuthService {
 
     private getSimpleNonceValue = (): string => {
         return ((Date.now() + Math.random()) * Math.random()).toString().replace('.', '');
+    }
+
+    private getRedirectUrl() {
+        let redirectUrl = `${this.config.loginUrl}?` +
+            `response_type=${this.oAuthTokenService.config.name}&` +
+            `client_id=${encodeURIComponent(this.config.clientId)}&` +
+            `redirect_uri=${encodeURIComponent(this.config.redirectUri)}&` +
+            `nonce=${encodeURIComponent(this.getSimpleNonceValue())}`;
+
+        if (this.config.scope) {
+            redirectUrl += `&scope=${encodeURIComponent(this.config.scope)}`;
+        }
+
+        if (this.config.state) {
+            redirectUrl += `&state=${encodeURIComponent(this.config.state)}`;
+        }
+
+        return redirectUrl;
+    }
+
+    private setAutomaticTokenRenewal() {
+        const tokenExpirationTime = this.oAuthTokenService.getTokenExpirationTime() * 1000;
+
+        setTimeout(() => {
+            const iFrame = document.createElement('iframe');
+            iFrame.src = this.getRedirectUrl();
+            iFrame.style.display = 'none';
+            iFrame.onload = (event) => {
+                try {
+                    const hashWithNewToken = iFrame.contentWindow.location.hash;
+                    document.body.removeChild(iFrame);
+
+                    const tokenData = this.getTokenDataFromUrl(hashWithNewToken);
+
+                    if (tokenData) {
+                        this.oAuthTokenService.setToken(tokenData);
+                        this.setAutomaticTokenRenewal();
+                    }
+                } catch (ex) {
+                    // iFrame.contentWindow can fail when an iframe loads identity server login page
+                    // but this page will not redirect back to the app url waiting for the user to login in
+                    // this behaviour my occur i.e. when login page authentication cookies expire
+                    document.body.removeChild(iFrame);
+                }
+            };
+
+            document.body.appendChild(iFrame);
+        }, tokenExpirationTime);
     }
 }

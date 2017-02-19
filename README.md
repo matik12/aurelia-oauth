@@ -224,6 +224,7 @@ export interface OAuthConfig {
     state?: string;
     redirectUri?: string;
     alwaysRequireLogin?: boolean;
+    autoTokenRenewal?: boolean;
 }
 
 export interface OAuthTokenConfig {
@@ -236,7 +237,7 @@ export interface OAuthTokenConfig {
 }
 ```
 
-## Added support for both aurelia-fetch-client and aurelia-http-client
+## Added support for both aurelia-fetch-client and aurelia-http-client (v.0.2.0)
 
 Currently, aurelia-oauth provides basic feature of adding authorization header to every request by using custom interceptor, which should work well with both client plugins. However, there is one slight difference in behaviour and in case of **aurelia-http-client** which has support for cancelling requests, plugin can abort request when checks that token has expired before the request was made. In both plugins the request response, which is passed in the promise chain contains additional flag **tokenExpired** in case that, was the reason request has failed. 
 
@@ -260,3 +261,7 @@ this.http.get('https://api.com')
     alert(reason.requestMessage.tokenExpired); 
   });
 ```
+
+## Added feature: automatic token renewal (v.0.3.0)
+
+Automatic token renewal feature can help preventing application token from expiration. First, it tracks token expiration time and then 30 seconds before the token is going to expire, it will create invisible IFrame that can obtain new token from Identity Server login page. In some cases, obtaining new token will not be possible, therefore standard behaviour will occur i.e. invalidToken event broadcasting via EventAggregator. This feature is enabled by default, but could be disabled simply setting flag **autoTokenRenewal** to false when configuring OAuthService and invoking oauthService.configure() method.

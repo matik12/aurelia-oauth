@@ -33,7 +33,7 @@ export class OAuthTokenService {
                 idToken: 'id_token',
                 tokenType: 'token_type'
             },
-            expireOffsetSeconds: 120
+            expireOffsetSeconds: 60
         };
     }
 
@@ -93,6 +93,13 @@ export class OAuthTokenService {
 
     public getTokenType = (): string => {
         return this.getToken() ? this.getToken().tokenType : undefined;
+    };
+
+    public getTokenExpirationTime = (): number => {
+        const tokenRenewalOffsetSeconds = 30;
+        const expireOffset = this.config.expireOffsetSeconds + tokenRenewalOffsetSeconds;
+
+        return (this.tokenData.expiresAt - this.getTimeNow() - expireOffset);
     };
 
     public removeToken = (): OAuthTokenData => {
