@@ -16,7 +16,7 @@
   "license": "MIT",
   "author": "Mateusz Korzel <mateusz.korzel@gmail.com>",
   "main": "dist/amd/aurelia-oauth.js",
-  "typings": "dist/aurelia-oauth.d.ts",
+  "typings": "dist/dts/aurelia-oauth.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/matik12/aurelia-oauth.git"
