@@ -64,7 +64,7 @@ The configuration for Azure Active Directory is very simple, because it uses def
 ```js
 import { OAuthService } from 'aurelia-oauth';
 
-function configureOauth(oauthService: OAuthService, oauthTokenService: OAuthTokenService, configureClient: (client: any) => void, client: any) {
+function configureOauth(oauthService: OAuthService, oauthTokenService, configureClient: (client: any) => void, client: any) {
   oauthService.configure(
     {
       loginUrl: 'https://login.microsoftonline.com/{tenantId}/oauth2/authorize',
