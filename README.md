@@ -7,6 +7,8 @@
 #### NPM package [aurelia-oauth](https://www.npmjs.com/package/aurelia-oauth)
 #### Setup using Google API -> [Live demo](https://matik12.github.io/aurelia-basic-app-skeleton/)
 
+#### See related plugin [aurelia-permission](https://github.com/matik12/aurelia-permission) for user authorization using defined permissions in Aurelia app 
+
 #### Post on [migrating from 0.1.5 and below](http://webplayground.io/2017/02/19/migrate-to-latest-aurelia-oauth)
 
 ## What is aurelia-oauth plugin?
