@@ -214,5 +214,3 @@ export class OAuthService {
         }, tokenExpirationTime);
     }
 }
-
-
