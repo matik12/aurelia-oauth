@@ -159,7 +159,7 @@ export class OAuthService {
     };
 
     private getBaseRouteUrl = (): string => {
-        return window.location.origin + '/#/';
+        return window.location.origin + window.location.pathname + '#/';
     }
 
     private getSimpleNonceValue = (): string => {
